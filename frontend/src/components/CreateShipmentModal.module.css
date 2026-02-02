@@ -1,100 +1,156 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--color-overlay);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 1rem;
+  padding: var(--space-4);
+  animation: modalOverlayIn 0.2s ease-out;
 }
 
 .modal {
-  background: #fff;
-  border-radius: 16px;
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
   max-width: 480px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-xl);
+  animation: modalIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalOverlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #e2e8f0;
+  padding: var(--space-5) var(--space-6);
+  border-bottom: 1px solid var(--color-border);
 }
 
-.header h2 { margin: 0; font-size: 1.25rem; }
+.header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
 
 .closeBtn {
   width: 36px;
   height: 36px;
   border: none;
-  background: #e2e8f0;
-  border-radius: 8px;
+  background: var(--color-border);
+  border-radius: var(--radius-md);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--color-text-muted);
+  transition: background 0.2s, color 0.2s;
+}
+
+.closeBtn:hover {
+  background: var(--color-border-muted);
+  color: var(--color-text);
 }
 
 .form {
-  padding: 1.5rem;
+  padding: var(--space-6);
 }
 
 .form label {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  margin-bottom: 1rem;
+  gap: var(--space-1);
+  margin-bottom: var(--space-4);
 }
 
-.form label span { font-size: 0.875rem; font-weight: 500; color: #475569; }
+.form label span {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
 
 .form input,
 .form select,
 .form textarea {
-  padding: 0.6rem 0.75rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-md);
   font-size: 1rem;
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 
-.form textarea { font-family: monospace; resize: vertical; }
+.form textarea {
+  font-family: monospace;
+  resize: vertical;
+}
 
-.loading { margin: 1rem 1.5rem; color: #64748b; }
-.error { margin: 0 0 1rem; color: #dc2626; font-size: 0.9rem; }
+.loading {
+  margin: var(--space-4) var(--space-6);
+  color: var(--color-text-subtle);
+}
+
+.error {
+  margin: 0 0 var(--space-4);
+  color: var(--color-error);
+  font-size: 0.9rem;
+}
 
 .actions {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--space-3);
   justify-content: flex-end;
-  margin-top: 1rem;
+  margin-top: var(--space-4);
 }
 
 .actions button {
-  padding: 0.6rem 1.25rem;
-  border-radius: 8px;
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-md);
   font-weight: 500;
   cursor: pointer;
-  border: 1px solid #cbd5e1;
-  background: #fff;
+  border: 1px solid var(--color-border-muted);
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 
 .actions button:last-child {
-  background: #0f172a;
-  color: #fff;
-  border-color: #0f172a;
+  background: var(--color-text);
+  color: var(--color-surface);
+  border-color: var(--color-text);
 }
 
 @media (prefers-color-scheme: dark) {
-  .modal { background: #1e293b; }
-  .header { border-color: #334155; }
-  .form label span { color: #94a3b8; }
-  .form input, .form select, .form textarea { background: #0f172a; border-color: #475569; color: #e2e8f0; }
-  .actions button { background: #334155; color: #e2e8f0; border-color: #475569; }
-  .actions button:last-child { background: #38bdf8; color: #0f172a; border-color: #38bdf8; }
+  .closeBtn {
+    background: var(--color-border);
+    color: var(--color-text-faint);
+  }
+  .closeBtn:hover {
+    background: var(--color-border-muted);
+    color: var(--color-text);
+  }
+  .actions button:last-child {
+    background: var(--color-primary);
+    color: var(--color-bg);
+    border-color: var(--color-primary);
+  }
 }

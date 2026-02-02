@@ -3,8 +3,8 @@ import { useQuery } from '@apollo/client/react';
 import GridViewIcon from '@mui/icons-material/GridView';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import AddIcon from '@mui/icons-material/Add';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import SortIcon from '@mui/icons-material/Sort';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import { SHIPMENTS } from '../graphql/operations';
 import { useAuth } from '../context/AuthContext';
 import ShipmentsGrid from '../components/ShipmentsGrid';
@@ -13,6 +13,8 @@ import ShipmentDetail from '../components/ShipmentDetail';
 import ShipmentFilters from '../components/ShipmentFilters';
 import CreateShipmentModal from '../components/CreateShipmentModal';
 import EditShipmentModal from '../components/EditShipmentModal';
+import ErrorDisplay from '../components/ErrorDisplay';
+import Spinner from '../components/Spinner';
 import styles from './Shipments.module.css';
 
 const PAGE_SIZE = 10;
@@ -110,14 +112,20 @@ export default function Shipments() {
         </div>
       </div>
 
-      {loading && <div className={styles.loading}>Loading shipments…</div>}
-      {error && <div className={styles.error}>{error.message}</div>}
+      {loading && (
+        <div className={styles.loading}>
+          <Spinner size="large" />
+          <span>Loading shipments…</span>
+        </div>
+      )}
+      {error && <ErrorDisplay error={error} onRetry={() => refetch()} compact />}
 
       {!loading && !error && (
         <>
           {items.length === 0 ? (
             <div className={styles.emptyState}>
-              <p>No shipments found.</p>
+              <LocalShippingIcon className={styles.emptyIcon} />
+              <p>No shipments found</p>
               <p className={styles.emptyHint}>Try adjusting filters or add a new shipment (admin).</p>
             </div>
           ) : (

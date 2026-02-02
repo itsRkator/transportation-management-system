@@ -1,45 +1,45 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.25rem;
+  gap: var(--space-5);
 }
 
 .tile {
-  background: #fff;
-  border-radius: 12px;
-  padding: 1.25rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
 }
 
 .tile:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-lg);
 }
 
 .tileHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.75rem;
+  margin-bottom: var(--space-3);
 }
 
 .tileId {
   font-weight: 700;
-  color: #64748b;
+  color: var(--color-text-subtle);
   font-size: 0.9rem;
 }
 
 .flagIcon {
   font-size: 1.1rem !important;
-  margin-left: 0.25rem;
-  color: #dc2626;
+  margin-left: var(--space-1);
+  color: var(--color-error);
 }
 
 .menuItemIcon {
-  margin-right: 0.5rem;
+  margin-right: var(--space-2);
   vertical-align: middle;
 }
 
@@ -48,11 +48,11 @@
 }
 
 .menuBtn {
-  width: 32px;
-  height: 32px;
+  width: var(--space-8);
+  height: var(--space-8);
   border: none;
-  background: #f1f5f9;
-  border-radius: 8px;
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
   cursor: pointer;
   font-size: 1.2rem;
   line-height: 1;
@@ -60,23 +60,24 @@
   align-items: center;
   justify-content: center;
   transition: background 0.2s;
+  color: var(--color-text);
 }
 
 .menuBtn:hover {
-  background: #e2e8f0;
+  background: var(--color-border);
 }
 
 .menu {
   position: absolute;
   top: 100%;
   right: 0;
-  margin: 4px 0 0;
-  padding: 0.5rem 0;
+  margin: var(--space-1) 0 0;
+  padding: var(--space-2) 0;
   list-style: none;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  border: 1px solid #e2e8f0;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
   min-width: 120px;
   z-index: 10;
 }
@@ -84,18 +85,18 @@
 .menu li button {
   display: block;
   width: 100%;
-  padding: 0.5rem 1rem;
+  padding: var(--space-2) var(--space-4);
   border: none;
   background: none;
   text-align: left;
   cursor: pointer;
   font-size: 0.9rem;
-  color: #334155;
+  color: var(--color-text);
   transition: background 0.2s;
 }
 
 .menu li button:hover:not(.deleteDisabled) {
-  background: #f1f5f9;
+  background: var(--color-bg);
 }
 
 .menu li button.deleteDisabled {
@@ -106,24 +107,24 @@
 .tileBody {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: var(--space-1);
 }
 
 .shipper {
   font-weight: 600;
-  color: #0f172a;
+  color: var(--color-text);
   font-size: 1rem;
   margin: 0;
 }
 
 .carrier {
-  color: #475569;
+  color: var(--color-text-muted);
   font-size: 0.9rem;
   margin: 0;
 }
 
 .location {
-  color: #64748b;
+  color: var(--color-text-subtle);
   font-size: 0.8rem;
   margin: 0;
   overflow: hidden;
@@ -132,31 +133,15 @@
 }
 
 .status {
-  margin: 0.5rem 0 0;
+  margin: var(--space-2) 0 0;
   font-size: 0.85rem;
   font-weight: 500;
-  color: #0ea5e9;
+  color: var(--color-primary);
 }
 
 .rates {
   margin: 0;
   font-size: 0.9rem;
   font-weight: 600;
-  color: #059669;
-}
-
-@media (prefers-color-scheme: dark) {
-  .tile { background: #1e293b; border-color: #334155; }
-  .tile:hover { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4); }
-  .tileId { color: #94a3b8; }
-  .menuBtn { background: #334155; color: #e2e8f0; }
-  .menuBtn:hover { background: #475569; }
-  .menu { background: #1e293b; border-color: #334155; }
-  .menu li button { color: #e2e8f0; }
-  .menu li button:hover { background: #334155; }
-  .shipper { color: #e2e8f0; }
-  .carrier { color: #94a3b8; }
-  .location { color: #64748b; }
-  .status { color: #38bdf8; }
-  .rates { color: #34d399; }
+  color: var(--color-success);
 }

@@ -1,25 +1,24 @@
 import { useState } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
-import LoginIcon from '@mui/icons-material/Login';
+import { useNavigate, Link } from 'react-router-dom';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { useAuth } from '../context/AuthContext';
 import { getErrorMessage } from '../utils/errorHandler';
-import styles from './Login.module.css';
+import styles from './Signup.module.css';
 
-export default function Login() {
+export default function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('employee');
   const [error, setError] = useState('');
-  const { login, loginLoading, sessionExpiredMessage, dismissSessionExpired } = useAuth();
+  const { register, registerLoading } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  const from = location.state?.from?.pathname || '/';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     try {
-      await login(email, password);
-      navigate(from, { replace: true });
+      await register(email, password, role);
+      navigate('/', { replace: true });
     } catch (err) {
       setError(getErrorMessage(err));
     }
@@ -28,13 +27,8 @@ export default function Login() {
   return (
     <div className={styles.page}>
       <div className={styles.card}>
-        <h1 className={styles.title}>TMS</h1>
-        {sessionExpiredMessage && (
-          <div className={styles.sessionExpired} role="alert">
-            <span>{sessionExpiredMessage}</span>
-            <button type="button" className={styles.dismissBtn} onClick={dismissSessionExpired} aria-label="Dismiss">×</button>
-          </div>
-        )}
+        <h1 className={styles.title}>Create account</h1>
+        <p className={styles.subtitle}>TMS – Transportation Management System</p>
         <form onSubmit={handleSubmit} className={styles.form}>
           <label>
             <span>Email</span>
@@ -42,7 +36,7 @@ export default function Login() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@tms.com"
+              placeholder="you@example.com"
               required
               autoComplete="email"
             />
@@ -55,20 +49,29 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              autoComplete="current-password"
+              minLength={6}
+              autoComplete="new-password"
             />
           </label>
+          <label>
+            <span>Role</span>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className={styles.select}
+            >
+              <option value="employee">Employee</option>
+              <option value="admin">Admin</option>
+            </select>
+          </label>
           {error && <p className={styles.error}>{error}</p>}
-          <button type="submit" disabled={loginLoading} className={styles.submit}>
-            <LoginIcon className={styles.submitIcon} fontSize="small" />
-            {loginLoading ? 'Signing in…' : 'Sign in'}
+          <button type="submit" disabled={registerLoading} className={styles.submit}>
+            <PersonAddIcon className={styles.submitIcon} fontSize="small" />
+            {registerLoading ? 'Creating account…' : 'Create account'}
           </button>
         </form>
-        <p className={styles.hint}>
-          Demo: admin@tms.com / admin123 (admin) or employee@tms.com / employee123 (employee)
-        </p>
         <p className={styles.footer}>
-          No account? <Link to="/signup" className={styles.link}>Create one</Link>
+          Already have an account? <Link to="/login" className={styles.link}>Sign in</Link>
         </p>
       </div>
     </div>

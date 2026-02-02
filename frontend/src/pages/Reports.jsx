@@ -3,15 +3,17 @@ import { SHIPMENT_STATS } from '../graphql/operations';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import ErrorDisplay from '../components/ErrorDisplay';
+import Spinner from '../components/Spinner';
 import styles from './Reports.module.css';
 
 export default function Reports() {
-  const { data, loading, error } = useQuery(SHIPMENT_STATS);
+  const { data, loading, error, refetch } = useQuery(SHIPMENT_STATS);
 
   const stats = data?.shipmentStats;
 
-  if (loading) return <div className={styles.page}><p className={styles.loading}>Loading reports…</p></div>;
-  if (error) return <div className={styles.page}><p className={styles.error}>{error.message}</p></div>;
+  if (loading) return <div className={styles.page}><div className={styles.loadingWrap}><Spinner size="large" /><p className={styles.loading}>Loading reports…</p></div></div>;
+  if (error) return <div className={styles.page}><ErrorDisplay error={error} onRetry={() => refetch()} /></div>;
   if (!stats) return null;
 
   return (

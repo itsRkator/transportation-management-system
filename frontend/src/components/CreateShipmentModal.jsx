@@ -1,10 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useMutation } from '@apollo/client/react';
 import CloseIcon from '@mui/icons-material/Close';
 import { CREATE_SHIPMENT } from '../graphql/operations';
 import styles from './CreateShipmentModal.module.css';
 
 export default function CreateShipmentModal({ onClose, onSuccess }) {
+  const firstInputRef = useRef(null);
+
+  useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    firstInputRef.current?.focus();
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [onClose]);
   const [shipperName, setShipperName] = useState('');
   const [carrierName, setCarrierName] = useState('');
   const [pickupLocation, setPickupLocation] = useState('');
@@ -50,16 +65,24 @@ export default function CreateShipmentModal({ onClose, onSuccess }) {
   };
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+    <div
+      className={styles.overlay}
+      onClick={onClose}
+      onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="create-shipment-title"
+      tabIndex={-1}
+    >
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <h2>New Shipment</h2>
+          <h2 id="create-shipment-title">New Shipment</h2>
           <button type="button" className={styles.closeBtn} onClick={onClose} aria-label="Close"><CloseIcon fontSize="small" /></button>
         </div>
         <form onSubmit={handleSubmit} className={styles.form}>
           <label>
             <span>Shipper name</span>
-            <input value={shipperName} onChange={(e) => setShipperName(e.target.value)} required />
+            <input ref={firstInputRef} value={shipperName} onChange={(e) => setShipperName(e.target.value)} required />
           </label>
           <label>
             <span>Carrier name</span>

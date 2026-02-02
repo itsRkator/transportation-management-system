@@ -99,13 +99,16 @@ const typeDefs = gql`
   }
 
   type Mutation {
+    register(email: String!, password: String!, role: String): AuthPayload!
     login(email: String!, password: String!): AuthPayload!
+    refreshToken(refreshToken: String!): AuthPayload!
     createShipment(input: CreateShipmentInput!): Shipment!
     updateShipment(id: ID!, input: UpdateShipmentInput!): Shipment
   }
 
   type AuthPayload {
-    token: String!
+    accessToken: String!
+    refreshToken: String!
     user: User!
   }
 `;

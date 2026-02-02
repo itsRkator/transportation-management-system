@@ -1,6 +1,16 @@
-# React + Vite
+# TMS Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite app for the Transportation Management System.
+
+## Environment variables
+
+Create `.env` in the frontend folder (or copy from `.env.example` / `.env.sample`). Only variables prefixed with `VITE_` are exposed to the client.
+
+| Variable | Description |
+|----------|-------------|
+| `VITE_GRAPHQL_URI` | Optional. GraphQL API URL. Default: `/graphql` (dev proxy to backend). In production you may set this to your API URL, e.g. `https://api.example.com/graphql`. |
+
+Run: `npm run dev` (uses Vite proxy to backend in dev). Build: `npm run build`.
 
 Currently, two official plugins are available:
 

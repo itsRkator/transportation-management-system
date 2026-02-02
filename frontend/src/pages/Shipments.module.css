@@ -1,161 +1,188 @@
 .page {
-  max-width: 1400px;
+  max-width: var(--page-max-width-xl);
   margin: 0 auto;
+  padding: 0;
 }
 
 .toolbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
 }
 
 .title {
   margin: 0;
   font-size: 1.75rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-text);
   flex: 1;
 }
 
 .newBtn {
-  padding: 0.5rem 1rem;
-  background: #0f172a;
-  color: #fff;
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-text);
+  color: var(--color-surface);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-weight: 500;
   cursor: pointer;
   transition: background 0.2s;
 }
 
 .newBtn:hover {
-  background: #1e293b;
+  background: var(--color-text-muted);
 }
 
 .newBtn .btnIcon {
-  margin-right: 0.35rem;
+  margin-right: var(--space-1);
   vertical-align: middle;
 }
 
 .sort .sortIcon {
-  margin-right: 0.25rem;
+  margin-right: var(--space-1);
   vertical-align: middle;
-  color: #64748b;
+  color: var(--color-text-subtle);
 }
 
 .viewToggle {
   display: flex;
   gap: 0;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   overflow: hidden;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-border-muted);
 }
 
 .viewToggle button {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.5rem 1rem;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-4);
   border: none;
-  background: #fff;
-  color: #64748b;
+  background: var(--color-surface);
+  color: var(--color-text-subtle);
   cursor: pointer;
   font-weight: 500;
   transition: background 0.2s, color 0.2s;
 }
 
 .viewToggle button:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: var(--color-bg);
+  color: var(--color-text);
 }
 
 .viewToggle .active {
-  background: #0f172a;
-  color: #fff;
+  background: var(--color-text);
+  color: var(--color-surface);
 }
 
 .sort {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .sort select {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-md);
   font-size: 0.95rem;
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 
 .sort button {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  background: #fff;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
   cursor: pointer;
   font-weight: 600;
 }
 
 .sort button:hover {
-  background: #f1f5f9;
+  background: var(--color-bg);
 }
 
-.loading,
-.error {
-  padding: 2rem;
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: var(--space-8) var(--space-6);
   text-align: center;
-  color: #64748b;
+  color: var(--color-text-subtle);
+}
+
+.loading span {
+  font-size: 0.95rem;
 }
 
 .error {
-  color: #dc2626;
-  background: #fef2f2;
-  border-radius: 10px;
+  padding: var(--space-6);
+  text-align: center;
+  color: var(--color-text-subtle);
 }
 
 .emptyState {
   text-align: center;
-  padding: 3rem 1.5rem;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  padding: var(--space-8) var(--space-6);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+  animation: emptyFadeIn 0.3s ease-out;
+}
+
+.emptyIcon {
+  font-size: 3rem !important;
+  color: var(--color-text-faint);
+  margin-bottom: var(--space-4);
+  display: block;
 }
 
 .emptyState p {
-  margin: 0 0 0.5rem;
+  margin: 0 0 var(--space-2);
   font-size: 1.1rem;
-  color: #475569;
+  color: var(--color-text-muted);
+}
+
+@keyframes emptyFadeIn {
+  from { opacity: 0.9; }
+  to { opacity: 1; }
 }
 
 .emptyHint {
   font-size: 0.9rem !important;
-  color: #94a3b8 !important;
+  color: var(--color-text-faint) !important;
 }
 
 .pagination {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  margin-top: 1.5rem;
-  padding: 1rem;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  padding: var(--space-4);
 }
 
 .pagination button {
-  padding: 0.5rem 1rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  background: #fff;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
   cursor: pointer;
   font-weight: 500;
 }
 
 .pagination button:hover:not(:disabled) {
-  background: #0f172a;
-  color: #fff;
-  border-color: #0f172a;
+  background: var(--color-text);
+  color: var(--color-surface);
+  border-color: var(--color-text);
 }
 
 .pagination button:disabled {
@@ -163,15 +190,28 @@
   cursor: not-allowed;
 }
 
+@media (max-width: 768px) {
+  .toolbar {
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+}
+
 @media (prefers-color-scheme: dark) {
-  .title { color: #e2e8f0; }
-  .emptyState { background: #1e293b; }
-  .emptyState p { color: #94a3b8; }
-  .emptyHint { color: #64748b !important; }
-  .viewToggle button { background: #1e293b; color: #94a3b8; }
-  .viewToggle button:hover { background: #334155; color: #e2e8f0; }
-  .viewToggle .active { background: #38bdf8; color: #0f172a; }
-  .sort select, .sort button { background: #1e293b; border-color: #475569; color: #e2e8f0; }
-  .pagination button { background: #1e293b; color: #e2e8f0; border-color: #475569; }
-  .pagination button:hover:not(:disabled) { background: #38bdf8; color: #0f172a; }
+  .newBtn {
+    background: var(--color-primary);
+    color: var(--color-bg);
+  }
+  .newBtn:hover {
+    background: var(--color-primary-hover);
+  }
+  .viewToggle .active {
+    background: var(--color-primary);
+    color: var(--color-bg);
+  }
+  .pagination button:hover:not(:disabled) {
+    background: var(--color-primary);
+    color: var(--color-bg);
+    border-color: var(--color-primary);
+  }
 }

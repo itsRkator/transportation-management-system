@@ -1,4 +1,5 @@
 import { useQuery } from '@apollo/client/react';
+import { useEffect } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -13,11 +14,32 @@ export default function ShipmentDetail({ shipmentId, onClose, canEdit, onEdit })
 
   const s = data?.shipment;
 
+  useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [onClose]);
+
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+    <div
+      className={styles.overlay}
+      onClick={onClose}
+      onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="shipment-detail-title"
+      tabIndex={-1}
+    >
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <h2>Shipment #{shipmentId}</h2>
+          <h2 id="shipment-detail-title">Shipment #{shipmentId}</h2>
           <button type="button" className={styles.closeBtn} onClick={onClose} aria-label="Close">
             <CloseIcon fontSize="small" />
           </button>

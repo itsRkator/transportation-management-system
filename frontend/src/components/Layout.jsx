@@ -35,7 +35,7 @@ const hamburgerItems = [
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [openSub, setOpenSub] = useState(null);
-  const { user, logout } = useAuth();
+  const { user, logout, sessionExpiredMessage, dismissSessionExpired } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -68,15 +68,18 @@ export default function Layout() {
           <span className={styles.brandShort}>TMS</span>
         </Link>
         <nav className={styles.horizontalNav}>
-          {horizontalItems.map(({ path, label }) => (
-            <Link
-              key={path}
-              to={path}
-              className={location.pathname === path ? styles.navActive : ''}
-            >
-              {label}
-            </Link>
-          ))}
+          {horizontalItems.map(({ path, label }) => {
+            const isActive = path === '/' ? location.pathname === '/' : location.pathname === path || location.pathname.startsWith(path + '/');
+            return (
+              <Link
+                key={path}
+                to={path}
+                className={isActive ? styles.navActive : ''}
+              >
+                {label}
+              </Link>
+            );
+          })}
         </nav>
         <div className={styles.headerRight}>
           <span className={styles.userBadge} title={user?.email}>
@@ -129,7 +132,7 @@ export default function Layout() {
               <Link
                 key={item.path}
                 to={item.path}
-                className={location.pathname === item.path ? styles.sidebarActive : ''}
+                className={item.path === '/' ? (location.pathname === '/' ? styles.sidebarActive : '') : (location.pathname === item.path || location.pathname.startsWith(item.path + '/') ? styles.sidebarActive : '')}
                 onClick={() => setSidebarOpen(false)}
               >
                 {item.label}
@@ -147,7 +150,15 @@ export default function Layout() {
         />
       )}
 
-      <main className={styles.main}>
+      {sessionExpiredMessage && (
+        <div className={styles.sessionBanner} role="alert">
+          <span>{sessionExpiredMessage}</span>
+          <button type="button" className={styles.sessionBannerBtn} onClick={() => { dismissSessionExpired(); navigate('/login'); }}>
+            Sign in
+          </button>
+        </div>
+      )}
+      <main className={`${styles.main} mainContent`}>
         <Outlet />
       </main>
     </div>

@@ -34,10 +34,15 @@ Vite proxies `/graphql` to the backend (see `vite.config.js`).
 - **Backend**: GraphQL API with queries (list/filter/pagination/sort, single shipment), mutations (add, update), JWT auth, role-based access (admin vs employee), PostgreSQL with indexes and connection pool.
 - **Frontend**: Hamburger menu with one-level sub-menus, horizontal nav, shipments in **grid** (10 columns) and **tile** view, tile actions (edit, flag, delete), shipment detail modal with “Back to list”, login, protected routes, admin-only “New Shipment” and create modal.
 
+## Error handling and fallbacks
+
+- **Backend (centralised):** `backend/utils/errorHandler.js` – normalises and logs errors; Apollo `formatError` uses it for GraphQL; Express 404 fallback and `expressErrorHandler` for non-GraphQL routes; `unhandledRejection` / `uncaughtException` logged (or exit).
+- **Frontend (centralised):** `frontend/src/utils/errorHandler.js` – `getErrorMessage`, `logError`, `reportError`; Apollo error link logs all GraphQL/network errors; root `ErrorBoundary` shows fallback UI with “Try again”; `ErrorDisplay` component for query/mutation errors (e.g. Shipments page).
+
 ## Project structure
 
-- `backend/`: Express + Apollo Server, config, models (User, Shipment), GraphQL schema/resolvers, auth middleware, migrations/seed scripts.
-- `frontend/`: React, Apollo Client, React Router, layout (hamburger + horizontal menu), Shipments (grid/tile/detail), Login, Dashboard, filters, pagination, sorting.
+- `backend/`: Express + Apollo Server, config, models (User, Shipment), GraphQL schema/resolvers, auth middleware, **utils/errorHandler.js**, migrations/seed scripts.
+- `frontend/`: React, Apollo Client, React Router, **ErrorBoundary**, **ErrorDisplay**, **utils/errorHandler.js**, layout, Shipments (grid/tile/detail), Login, Dashboard, filters, pagination, sorting.
 
 Secrets and env are documented in `backend/.env.example`; never commit `.env`.
 

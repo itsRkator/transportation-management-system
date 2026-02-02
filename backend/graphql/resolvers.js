@@ -3,7 +3,21 @@
  */
 const ShipmentModel = require('../models/Shipment');
 const UserModel = require('../models/User');
+const RefreshTokenModel = require('../models/RefreshToken');
 const { GraphQLScalarType, Kind } = require('graphql');
+const {
+  issueAccessToken,
+  createStoredRefreshToken,
+  findUserByStoredRefreshToken,
+  revokeRefreshToken,
+} = require('../middleware/auth');
+const {
+  validateEmail,
+  validatePassword,
+  validateRole,
+  validateCreateShipmentInput,
+  validateUpdateShipmentInput,
+} = require('../utils/validation');
 
 const DateTime = new GraphQLScalarType({
   name: 'DateTime',
@@ -92,14 +106,49 @@ const resolvers = {
   },
 
   Mutation: {
-    login: async (_, { email, password }, context) => {
-      const user = await UserModel.findByEmail(email);
+    register: async (_, { email, password, role: inputRole }, context) => {
+      const validatedEmail = validateEmail(email);
+      validatePassword(password);
+      const role = validateRole(inputRole) || 'employee';
+      const existing = await UserModel.findByEmail(validatedEmail);
+      if (existing) throw new Error('Email already registered');
+      const user = await UserModel.create({ email: validatedEmail, password, role });
+      const accessToken = issueAccessToken({ id: user.id, role: user.role });
+      const { plain: refreshToken } = await createStoredRefreshToken(user.id);
+      return {
+        accessToken,
+        refreshToken,
+        user: { id: String(user.id), email: user.email, role: user.role, createdAt: user.created_at },
+      };
+    },
+
+    login: async (_, { email, password }) => {
+      const validatedEmail = validateEmail(email);
+      validatePassword(password);
+      const user = await UserModel.findByEmail(validatedEmail);
       if (!user) throw new Error('Invalid email or password');
       const valid = await UserModel.verifyPassword(password, user.password_hash);
       if (!valid) throw new Error('Invalid email or password');
-      const { issueToken } = context;
+      const accessToken = issueAccessToken({ id: user.id, role: user.role });
+      const { plain: refreshToken } = await createStoredRefreshToken(user.id);
       return {
-        token: issueToken({ id: user.id, role: user.role }),
+        accessToken,
+        refreshToken,
+        user: { id: String(user.id), email: user.email, role: user.role, createdAt: user.created_at },
+      };
+    },
+
+    refreshToken: async (_, { refreshToken: token }) => {
+      const found = await findUserByStoredRefreshToken(token);
+      if (!found) throw new Error('Invalid or expired refresh token');
+      const user = await UserModel.findById(found.userId);
+      if (!user) throw new Error('User not found');
+      await revokeRefreshToken(token);
+      const accessToken = issueAccessToken({ id: user.id, role: user.role });
+      const { plain: refreshToken } = await createStoredRefreshToken(user.id);
+      return {
+        accessToken,
+        refreshToken,
         user: { id: String(user.id), email: user.email, role: user.role, createdAt: user.created_at },
       };
     },
@@ -107,30 +156,17 @@ const resolvers = {
     createShipment: async (_, { input }, context) => {
       if (!context.user) throw new Error('Unauthorized');
       if (context.user.role !== 'admin') throw new Error('Forbidden: only admin can create shipments');
-      const row = await ShipmentModel.create({
-        shipperName: input.shipperName,
-        carrierName: input.carrierName,
-        pickupLocation: input.pickupLocation,
-        deliveryLocation: input.deliveryLocation,
-        trackingData: input.trackingData || {},
-        rates: input.rates || {},
-        status: input.status || 'pending',
-      });
+      const validated = validateCreateShipmentInput(input);
+      const row = await ShipmentModel.create(validated);
       return mapShipment(row);
     },
 
     updateShipment: async (_, { id, input }, context) => {
       if (!context.user) throw new Error('Unauthorized');
       if (context.user.role !== 'admin') throw new Error('Forbidden: only admin can update shipments');
-      const row = await ShipmentModel.update(Number.parseInt(id, 10), {
-        shipperName: input.shipperName,
-        carrierName: input.carrierName,
-        pickupLocation: input.pickupLocation,
-        deliveryLocation: input.deliveryLocation,
-        trackingData: input.trackingData,
-        rates: input.rates,
-        status: input.status,
-      });
+      const validated = validateUpdateShipmentInput(input);
+      if (Object.keys(validated).length === 0) throw new Error('No valid fields to update');
+      const row = await ShipmentModel.update(Number.parseInt(id, 10), validated);
       return row ? mapShipment(row) : null;
     },
   },

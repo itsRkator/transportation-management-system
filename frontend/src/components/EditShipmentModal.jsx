@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation } from '@apollo/client/react';
 import CloseIcon from '@mui/icons-material/Close';
 import { SHIPMENT, UPDATE_SHIPMENT } from '../graphql/operations';
@@ -13,6 +13,7 @@ export default function EditShipmentModal({ shipmentId, onClose, onSuccess }) {
   const [trackingJson, setTrackingJson] = useState('{}');
   const [ratesJson, setRatesJson] = useState('{}');
   const [error, setError] = useState('');
+  const firstInputRef = useRef(null);
 
   const { data, loading: queryLoading } = useQuery(SHIPMENT, {
     variables: { id: shipmentId },
@@ -39,6 +40,20 @@ export default function EditShipmentModal({ shipmentId, onClose, onSuccess }) {
         : '{}'
     );
   }, [shipment]);
+
+  useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    if (shipment) firstInputRef.current?.focus();
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [onClose, shipment]);
 
   const [updateShipment, { loading: mutateLoading }] = useMutation(UPDATE_SHIPMENT, {
     onCompleted: () => {
@@ -81,10 +96,18 @@ export default function EditShipmentModal({ shipmentId, onClose, onSuccess }) {
   if (!shipmentId) return null;
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+    <div
+      className={styles.overlay}
+      onClick={onClose}
+      onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="edit-shipment-title"
+      tabIndex={-1}
+    >
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <h2>Edit Shipment #{shipmentId}</h2>
+          <h2 id="edit-shipment-title">Edit Shipment #{shipmentId}</h2>
           <button type="button" className={styles.closeBtn} onClick={onClose} aria-label="Close"><CloseIcon fontSize="small" /></button>
         </div>
         {queryLoading && <p className={styles.loading}>Loading…</p>}
@@ -92,7 +115,7 @@ export default function EditShipmentModal({ shipmentId, onClose, onSuccess }) {
           <form onSubmit={handleSubmit} className={styles.form}>
             <label>
               <span>Shipper name</span>
-              <input value={shipperName} onChange={(e) => setShipperName(e.target.value)} required />
+              <input ref={firstInputRef} value={shipperName} onChange={(e) => setShipperName(e.target.value)} required />
             </label>
             <label>
               <span>Carrier name</span>

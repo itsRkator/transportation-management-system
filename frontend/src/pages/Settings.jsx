@@ -5,15 +5,17 @@ import PersonIcon from '@mui/icons-material/Person';
 import BadgeIcon from '@mui/icons-material/Badge';
 import EmailIcon from '@mui/icons-material/Email';
 import InfoIcon from '@mui/icons-material/Info';
+import ErrorDisplay from '../components/ErrorDisplay';
+import Spinner from '../components/Spinner';
 import styles from './Settings.module.css';
 
 export default function Settings() {
-  const { data, loading, error } = useQuery(ME);
+  const { data, loading, error, refetch } = useQuery(ME);
 
   const user = data?.me;
 
-  if (loading) return <div className={styles.page}><p className={styles.loading}>Loading…</p></div>;
-  if (error) return <div className={styles.page}><p className={styles.error}>{error.message}</p></div>;
+  if (loading) return <div className={styles.page}><div className={styles.loadingWrap}><Spinner size="large" /><p className={styles.loading}>Loading…</p></div></div>;
+  if (error) return <div className={styles.page}><ErrorDisplay error={error} onRetry={() => refetch()} />;</div>;
 
   return (
     <div className={styles.page}>

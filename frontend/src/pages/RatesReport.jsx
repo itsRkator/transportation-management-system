@@ -2,15 +2,17 @@ import { useQuery } from '@apollo/client/react';
 import { SHIPMENT_STATS } from '../graphql/operations';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import ErrorDisplay from '../components/ErrorDisplay';
+import Spinner from '../components/Spinner';
 import styles from './Reports.module.css';
 
 export default function RatesReport() {
-  const { data, loading, error } = useQuery(SHIPMENT_STATS);
+  const { data, loading, error, refetch } = useQuery(SHIPMENT_STATS);
 
   const stats = data?.shipmentStats;
 
-  if (loading) return <div className={styles.page}><p className={styles.loading}>Loading rates report…</p></div>;
-  if (error) return <div className={styles.page}><p className={styles.error}>{error.message}</p></div>;
+  if (loading) return <div className={styles.page}><div className={styles.loadingWrap}><Spinner size="large" /><p className={styles.loading}>Loading rates report…</p></div></div>;
+  if (error) return <div className={styles.page}><ErrorDisplay error={error} onRetry={() => refetch()} /></div>;
   if (!stats) return null;
 
   const byCarrier = stats.byCarrier ?? [];
