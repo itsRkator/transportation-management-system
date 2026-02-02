@@ -1,0 +1,173 @@
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.25rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.titleIcon {
+  font-size: 2rem !important;
+  color: #0ea5e9;
+}
+
+.lead {
+  margin: 0 0 1.5rem;
+  color: #64748b;
+  font-size: 1rem;
+}
+
+.loading,
+.error {
+  padding: 2rem;
+  text-align: center;
+}
+
+.error {
+  color: #dc2626;
+  background: #fef2f2;
+  border-radius: 10px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+}
+
+.cardIconWrap {
+  color: #0ea5e9;
+  margin-bottom: 0.75rem;
+}
+
+.cardIconWrap svg {
+  font-size: 2rem !important;
+}
+
+.card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.bigNumber {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+}
+
+.section h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.section h2 .sectionIcon {
+  font-size: 1.25rem !important;
+  color: #0ea5e9;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.listItem:last-child {
+  border-bottom: none;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: #dbeafe;
+  color: #1d4ed8;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.count {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 0.6rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.table th {
+  font-weight: 600;
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+.table td {
+  color: #334155;
+}
+
+@media (prefers-color-scheme: dark) {
+  .title { color: #e2e8f0; }
+  .titleIcon { color: #38bdf8 !important; }
+  .lead { color: #94a3b8; }
+  .card, .section { background: #1e293b; border-color: #334155; }
+  .card h2, .section h2 { color: #94a3b8; }
+  .bigNumber { color: #e2e8f0; }
+  .listItem { border-color: #334155; }
+  .statusBadge { background: #1e3a5f; color: #7dd3fc; }
+  .count { color: #e2e8f0; }
+  .table th { color: #94a3b8; }
+  .table td { color: #e2e8f0; }
+  .table th, .table td { border-color: #334155; }
+}

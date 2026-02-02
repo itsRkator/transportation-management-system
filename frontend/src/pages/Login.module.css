@@ -1,0 +1,119 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  padding: 1rem;
+}
+
+.card {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+}
+
+.title {
+  margin: 0 0 0.25rem;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0f172a;
+  text-align: center;
+}
+
+.subtitle {
+  margin: 0 0 1.5rem;
+  font-size: 0.95rem;
+  color: #64748b;
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form label span {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #475569;
+}
+
+.form input {
+  padding: 0.75rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.form input:focus {
+  outline: none;
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+}
+
+.error {
+  margin: 0;
+  padding: 0.5rem;
+  background: #fef2f2;
+  color: #dc2626;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.submit {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.submit:hover:not(:disabled) {
+  opacity: 0.95;
+  transform: translateY(-1px);
+}
+
+.submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.submitIcon {
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+.hint {
+  margin: 1.25rem 0 0;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  text-align: center;
+  line-height: 1.4;
+}
+
+@media (prefers-color-scheme: dark) {
+  .card { background: #1e293b; }
+  .title { color: #e2e8f0; }
+  .subtitle { color: #94a3b8; }
+  .form label span { color: #94a3b8; }
+  .form input { background: #0f172a; border-color: #475569; color: #e2e8f0; }
+  .form input:focus { border-color: #38bdf8; }
+  .submit { background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%); color: #0f172a; }
+  .hint { color: #64748b; }
+}

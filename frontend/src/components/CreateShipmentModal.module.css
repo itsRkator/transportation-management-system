@@ -1,0 +1,100 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 16px;
+  max-width: 480px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.header h2 { margin: 0; font-size: 1.25rem; }
+
+.closeBtn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form {
+  padding: 1.5rem;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.form label span { font-size: 0.875rem; font-weight: 500; color: #475569; }
+
+.form input,
+.form select,
+.form textarea {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.form textarea { font-family: monospace; resize: vertical; }
+
+.loading { margin: 1rem 1.5rem; color: #64748b; }
+.error { margin: 0 0 1rem; color: #dc2626; font-size: 0.9rem; }
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.actions button {
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+}
+
+.actions button:last-child {
+  background: #0f172a;
+  color: #fff;
+  border-color: #0f172a;
+}
+
+@media (prefers-color-scheme: dark) {
+  .modal { background: #1e293b; }
+  .header { border-color: #334155; }
+  .form label span { color: #94a3b8; }
+  .form input, .form select, .form textarea { background: #0f172a; border-color: #475569; color: #e2e8f0; }
+  .actions button { background: #334155; color: #e2e8f0; border-color: #475569; }
+  .actions button:last-child { background: #38bdf8; color: #0f172a; border-color: #38bdf8; }
+}
