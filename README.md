@@ -1,62 +1,216 @@
 # Transportation Management System (TMS)
 
-Full-stack TMS with GraphQL API (Node.js, PostgreSQL) and React frontend.
+A full-stack Transportation Management System with a **GraphQL API** (Node.js, PostgreSQL) and a **React** frontend. Manage shipments, view reports, and control access with role-based authentication (admin and employee).
 
-## Quick start
+---
 
-### Backend
+## Table of contents
 
-1. **PostgreSQL**: Create a database, e.g. `createdb tms_db`
-2. **Env**: `cd backend` then copy `.env.example` to `.env` and set:
-   - `DATABASE_URL=postgresql://user:password@localhost:5432/tms_db`
-   - `JWT_SECRET=<strong-secret>`
-   - `CORS_ORIGINS=http://localhost:5173`
-3. **Install & setup**:
-   ```bash
-   cd backend && npm install && npm run db:migrate && npm run db:seed
-   ```
-4. **Run**: `npm run dev` → API at `http://localhost:4000/graphql`
+- [Tech stack](#tech-stack)
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Quick start](#quick-start)
+- [Demo users](#demo-users)
+- [Architecture](#architecture)
+- [Error handling](#error-handling)
+- [Project structure](#project-structure)
+- [Deployment](#deployment)
+- [Environment & secrets](#environment--secrets)
 
-**Demo users** (after seed):
+---
 
-- **Admin**: `admin@tms.com` / `admin123` (can create/update shipments)
-- **Employee**: `employee@tms.com` / `employee123` (view only)
+## Tech stack
 
-### Frontend
+| Layer   | Technologies |
+|--------|--------------|
+| **Backend** | Node.js, Express 5, Apollo Server 5, GraphQL, PostgreSQL (pg), JWT, bcrypt, Helmet, CORS, rate limiting |
+| **Frontend** | React 19, Vite 7, Apollo Client, React Router 7, MUI (Material UI), CSS Modules |
+| **Database** | PostgreSQL with connection pooling and indexes for shipments |
 
-1. **Install**: `cd frontend && npm install`
-2. **Run**: `npm run dev` → app at `http://localhost:5173`
-
-Vite proxies `/graphql` to the backend (see `vite.config.js`).
+---
 
 ## Features
 
-- **Backend**: GraphQL API with queries (list/filter/pagination/sort, single shipment), mutations (add, update), JWT auth, role-based access (admin vs employee), PostgreSQL with indexes and connection pool.
-- **Frontend**: Hamburger menu with one-level sub-menus, horizontal nav, shipments in **grid** (10 columns) and **tile** view, tile actions (edit, flag, delete), shipment detail modal with “Back to list”, login, protected routes, admin-only “New Shipment” and create modal.
+- **Backend**
+  - GraphQL API: list shipments (filters, pagination, sort), single shipment, shipment stats
+  - Mutations: register, login, refresh token, create shipment, update shipment
+  - JWT auth with access + refresh tokens; role-based access (admin vs employee)
+  - PostgreSQL with connection pool and indexes on `shipments(shipper_name, carrier_name, status, created_at)`
+  - Health endpoint: `GET /health`
+  - Centralised error handling and logging
 
-## Error handling and fallbacks
+- **Frontend**
+  - Hamburger menu with one-level sub-menus; horizontal navigation
+  - Shipments: **grid** (10 columns) and **tile** view; tile actions (edit, flag, delete)
+  - Shipment detail view (modal/expanded) with “Back to list”
+  - Login / signup; protected routes; admin-only “New Shipment” and create modal
+  - Reports (e.g. rates); Dashboard; Settings
+  - Centralised error handling: ErrorBoundary, ErrorDisplay, Apollo error link
 
-- **Backend (centralised):** `backend/utils/errorHandler.js` – normalises and logs errors; Apollo `formatError` uses it for GraphQL; Express 404 fallback and `expressErrorHandler` for non-GraphQL routes; `unhandledRejection` / `uncaughtException` logged (or exit).
-- **Frontend (centralised):** `frontend/src/utils/errorHandler.js` – `getErrorMessage`, `logError`, `reportError`; Apollo error link logs all GraphQL/network errors; root `ErrorBoundary` shows fallback UI with “Try again”; `ErrorDisplay` component for query/mutation errors (e.g. Shipments page).
+---
+
+## Prerequisites
+
+- **Node.js** (v18+ recommended)
+- **PostgreSQL** (local or hosted, e.g. Neon, Supabase)
+- **npm** (or yarn/pnpm)
+
+---
+
+## Quick start
+
+### 1. Backend
+
+```bash
+cd backend
+```
+
+1. **Create a PostgreSQL database** (if not using a hosted URL):
+
+   ```bash
+   createdb tms_db
+   ```
+
+2. **Environment**: Copy `.env.example` to `.env` and set:
+
+   | Variable | Description |
+   |----------|-------------|
+   | `DATABASE_URL` | PostgreSQL connection string, e.g. `postgresql://user:password@localhost:5432/tms_db` |
+   | `JWT_SECRET` | Strong secret for JWT signing (e.g. `openssl rand -base64 32`) |
+   | `CORS_ORIGINS` | Allowed origins, e.g. `http://localhost:5173` |
+
+3. **Install, migrate, seed**:
+
+   ```bash
+   npm install
+   npm run db:migrate
+   npm run db:seed
+   ```
+
+4. **Run**:
+
+   ```bash
+   npm run dev
+   ```
+
+   API: **http://localhost:4000/graphql** (Apollo Sandbox available at that URL).
+
+### 2. Frontend
+
+```bash
+cd frontend
+```
+
+1. **Environment** (optional): Copy `.env.example` to `.env`. For local dev, the default `/graphql` is proxied to the backend via Vite.
+
+2. **Install and run**:
+
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+   App: **http://localhost:5173**
+
+Vite proxies `/graphql` to the backend in development (see `frontend/vite.config.js`).
+
+---
+
+## Demo users
+
+After running `npm run db:seed` in the backend:
+
+| Role     | Email             | Password    | Permissions                    |
+|----------|-------------------|-------------|--------------------------------|
+| **Admin**   | `admin@tms.com`    | `admin123`  | Create/update shipments, all queries |
+| **Employee** | `employee@tms.com` | `employee123` | List and view shipments only   |
+
+---
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Frontend (React + Vite)                                         │
+│  - Apollo Client → /graphql (proxied in dev to backend)          │
+│  - React Router, AuthContext, protected routes                   │
+└───────────────────────────────┬─────────────────────────────────┘
+                                │ HTTP/GraphQL
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  Backend (Express + Apollo Server)                               │
+│  - /graphql → GraphQL API                                        │
+│  - /health → Health check                                        │
+│  - JWT auth middleware, rate limit, Helmet, CORS                 │
+└───────────────────────────────┬─────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  PostgreSQL                                                      │
+│  - users, shipments, refresh_tokens                             │
+│  - Indexes on shipments for filters and sorting                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+- **Auth**: Access token (short-lived) + refresh token (stored in DB). Send access token in `Authorization: Bearer <token>` for GraphQL requests.
+- **Roles**: `admin` can create/update shipments; `employee` can only list and view.
+
+---
+
+## Error handling
+
+- **Backend** (`backend/utils/errorHandler.js`): Normalises and logs errors; Apollo `formatError` for GraphQL; Express 404 fallback and `expressErrorHandler` for non-GraphQL routes; `unhandledRejection` / `uncaughtException` logged (or exit).
+- **Frontend** (`frontend/src/utils/errorHandler.js`): `getErrorMessage`, `logError`, `reportError`; Apollo error link for GraphQL/network errors; root `ErrorBoundary` with “Try again”; `ErrorDisplay` for query/mutation errors (e.g. Shipments page).
+
+---
 
 ## Project structure
 
-- `backend/`: Express + Apollo Server, config, models (User, Shipment), GraphQL schema/resolvers, auth middleware, **utils/errorHandler.js**, migrations/seed scripts.
-- `frontend/`: React, Apollo Client, React Router, **ErrorBoundary**, **ErrorDisplay**, **utils/errorHandler.js**, layout, Shipments (grid/tile/detail), Login, Dashboard, filters, pagination, sorting.
+```
+├── backend/                 # GraphQL API
+│   ├── config/              # database, env
+│   ├── graphql/             # typeDefs, resolvers, context
+│   ├── middleware/          # auth
+│   ├── models/              # User, Shipment, RefreshToken
+│   ├── scripts/             # runMigrations, seed
+│   ├── utils/               # errorHandler, validation
+│   ├── server.js
+│   └── .env.example
+├── frontend/                # React app
+│   ├── src/
+│   │   ├── components/      # Layout, Shipments, modals, ErrorBoundary, etc.
+│   │   ├── context/        # AuthContext
+│   │   ├── graphql/        # client, operations
+│   │   ├── pages/          # Dashboard, Shipments, Login, Reports, Settings
+│   │   └── utils/          # errorHandler
+│   ├── vite.config.js
+│   └── .env.example
+├── docs/                    # API and other documentation
+└── README.md
+```
 
-Secrets and env are documented in `backend/.env.example`; never commit `.env`.
+See [backend/README.md](backend/README.md) and [frontend/README.md](frontend/README.md) for per-package details. For GraphQL schema and examples, see [docs/API.md](docs/API.md).
 
-## Deployment (for live URL submission)
+---
+
+## Deployment
 
 **Backend** (e.g. Render, Railway, Fly.io):
 
-- Set env: `DATABASE_URL` (e.g. Neon, Supabase, or hosted Postgres), `JWT_SECRET`, `CORS_ORIGINS` (your frontend origin).
+- Set env: `DATABASE_URL`, `JWT_SECRET`, `CORS_ORIGINS` (your frontend origin).
 - Run `npm run db:migrate` and `npm run db:seed` once.
-- Start with `npm start` (or your platform’s start command).
+- Start with `npm start`.
 
 **Frontend** (e.g. Vite, Netlify, Vercel):
 
-- Set the API base URL: either proxy `/graphql` to your backend in the hosting config, or set `VITE_GRAPHQL_URL` and use it in `src/graphql/client.js` for `uri`.
-- Build: `npm run build`; serve the `dist` folder or use the platform’s build + deploy.
+- Set `VITE_GRAPHQL_URI` to your backend GraphQL URL (e.g. `https://api.example.com/graphql`) if not using a proxy.
+- Build: `npm run build`; serve the `dist` folder.
 
-**Submission:** Deploy both, then send the **live app URL** (where users can open the TMS UI) and the **Github repo link**. No access limitations on the app.
+**Submission:** Deploy both and share the **live app URL** and **GitHub repo link**.
+
+---
+
+## Environment & secrets
+
+- Backend: all secrets from env; see `backend/.env.example`. **Never commit `.env`.**
+- Frontend: only `VITE_*` variables are exposed to the client; see `frontend/.env.example`.
