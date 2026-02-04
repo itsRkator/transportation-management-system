@@ -6,6 +6,150 @@ const { pool } = require('../config/database');
 
 const SALT_ROUNDS = 10;
 
+const SHIPPERS = [
+  'Acme Logistics',
+  'Global Supplies Inc',
+  'Pacific Imports',
+  'Midwest Manufacturing',
+  'Eastern Traders',
+  'Northern Freight Co',
+  'Southern Distribution',
+  'Central Carriers',
+  'Coastal Shipping',
+  'Inland Express',
+  'Metro Logistics',
+  'Rural Transport',
+  'Cross-State Freight',
+  'QuickShip Inc',
+  'Bulk Haulers LLC',
+  'Premium Cargo',
+  'Standard Freight Co',
+  'Elite Logistics',
+  'Swift Transport',
+  'Reliable Movers',
+];
+
+const CARRIERS = [
+  'FedEx Freight',
+  'UPS Freight',
+  'XPO Logistics',
+  'Old Dominion',
+  'J.B. Hunt',
+  'Werner Enterprises',
+  'Schneider National',
+  'Knight-Swift',
+  'Landstar',
+  'Estes Express',
+  'R+L Carriers',
+  'Saia LTL',
+  'ABF Freight',
+  'Yellow Freight',
+  'Con-way Freight',
+];
+
+const CITIES = [
+  ['Chicago', 'IL'],
+  ['Dallas', 'TX'],
+  ['Detroit', 'MI'],
+  ['Atlanta', 'GA'],
+  ['Los Angeles', 'CA'],
+  ['Seattle', 'WA'],
+  ['Cleveland', 'OH'],
+  ['Denver', 'CO'],
+  ['Boston', 'MA'],
+  ['Phoenix', 'AZ'],
+  ['Houston', 'TX'],
+  ['Miami', 'FL'],
+  ['Minneapolis', 'MN'],
+  ['Philadelphia', 'PA'],
+  ['San Diego', 'CA'],
+  ['Portland', 'OR'],
+  ['Las Vegas', 'NV'],
+  ['Charlotte', 'NC'],
+  ['Indianapolis', 'IN'],
+  ['Columbus', 'OH'],
+];
+
+const STATUSES = ['pending', 'in_transit', 'delivered'];
+const HUBS = [
+  'Chicago Hub',
+  'Louisville',
+  'LA Depot',
+  'Phoenix',
+  'Dallas Hub',
+  'Atlanta DC',
+  'Denver Terminal',
+  'Seattle Depot',
+  'Detroit Yard',
+  'Boston Port',
+];
+
+function pick(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function buildShipments(count) {
+  const rows = [];
+  const params = [];
+  let idx = 1;
+  for (let i = 0; i < count; i++) {
+    const [pickCity, pickState] = pick(CITIES);
+    const [delCity, delState] = pick(CITIES);
+    const freight = randomInt(250, 1200);
+    const fuelSurcharge = Math.round(freight * 0.1);
+    const trackingNumber = `${pick([
+      'FX',
+      'UPS',
+      'XPO',
+      'OD',
+      'JB',
+    ])}${randomInt(100000, 999999)}`;
+    const trackingData = JSON.stringify({
+      trackingNumber,
+      lastScan: pick(HUBS),
+    });
+    const rates = JSON.stringify({ freight, fuelSurcharge });
+    const status = pick(STATUSES);
+    rows.push(
+      `($${idx}, $${idx + 1}, $${idx + 2}, $${idx + 3}, $${idx + 4}::jsonb, $${
+        idx + 5
+      }::jsonb, $${idx + 6})`
+    );
+    params.push(
+      pick(SHIPPERS),
+      pick(CARRIERS),
+      `${randomInt(100, 999)} ${pick([
+        'Warehouse St',
+        'Industrial Blvd',
+        'Port Rd',
+        'Factory Lane',
+        'Harbor Way',
+      ])}, ${pickCity}, ${pickState}`,
+      `${randomInt(100, 999)} ${pick([
+        'Distribution Ave',
+        'Commerce Dr',
+        'Trade Center',
+        'Retail Park',
+        'Logistics Blvd',
+      ])}, ${delCity}, ${delState}`,
+      trackingData,
+      rates,
+      status
+    );
+    idx += 7;
+  }
+  return {
+    sql: `INSERT INTO shipments (shipper_name, carrier_name, pickup_location, delivery_location, tracking_data, rates, status) VALUES ${rows.join(
+      ', '
+    )}`,
+    params,
+  };
+}
+
 async function seed() {
   const client = await pool.connect();
   try {
@@ -22,16 +166,13 @@ async function seed() {
 
     const { rowCount } = await client.query('SELECT 1 FROM shipments LIMIT 1');
     if (rowCount === 0) {
-      await client.query(`
-        INSERT INTO shipments (shipper_name, carrier_name, pickup_location, delivery_location, tracking_data, rates, status) VALUES
-          ('Acme Logistics', 'FedEx Freight', '123 Warehouse St, Chicago, IL', '456 Distribution Ave, Dallas, TX', '{"trackingNumber":"FX123456","lastScan":"Chicago Hub"}', '{"freight":450,"fuelSurcharge":45}', 'in_transit'),
-          ('Global Supplies Inc', 'UPS Freight', '789 Industrial Blvd, Detroit, MI', '321 Commerce Dr, Atlanta, GA', '{"trackingNumber":"UPS789012","lastScan":"Louisville"}', '{"freight":620,"fuelSurcharge":62}', 'in_transit'),
-          ('Pacific Imports', 'XPO Logistics', '555 Port Rd, Los Angeles, CA', '777 Trade Center, Seattle, WA', '{"trackingNumber":"XPO555777","lastScan":"LA Depot"}', '{"freight":380,"fuelSurcharge":38}', 'pending'),
-          ('Midwest Manufacturing', 'Old Dominion', '100 Factory Lane, Cleveland, OH', '200 Retail Park, Denver, CO', '{"trackingNumber":"OD200100","lastScan":"Cleveland"}', '{"freight":520,"fuelSurcharge":52}', 'delivered'),
-          ('Eastern Traders', 'J.B. Hunt', '400 Harbor Way, Boston, MA', '600 Logistics Blvd, Phoenix, AZ', '{"trackingNumber":"JB400600","lastScan":"Phoenix"}', '{"freight":890,"fuelSurcharge":89}', 'in_transit')
-      `);
+      const { sql, params } = buildShipments(100);
+      await client.query(sql, params);
+      console.log('Seed completed. 100 shipments inserted.');
     }
-    console.log('Seed completed. Users: admin@tms.com / admin123 (admin), employee@tms.com / employee123 (employee).');
+    console.log(
+      'Seed completed. Users: admin@tms.com / admin123 (admin), employee@tms.com / employee123 (employee).'
+    );
   } finally {
     client.release();
     await pool.end();
